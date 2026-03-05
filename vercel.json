@@ -1,0 +1,49 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "client/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "client/dist"
+      }
+    },
+    {
+      "src": "server/_core/**/*.ts",
+      "use": "@vercel/node",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
+    }
+  ],
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "client/dist",
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "functions": {
+    "server/_core/**/*.ts": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/trpc(.*)",
+      "dest": "/server/_core/api/trpc.ts"
+    },
+    {
+      "src": "/api/oauth(.*)",
+      "dest": "/server/_core/api/oauth.ts"
+    },
+    {
+      "src": "/api/chat(.*)",
+      "dest": "/server/_core/api/chat.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
